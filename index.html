@@ -386,11 +386,11 @@ const DEFAULTS = { aiProv: 'mock', aiKey: '', aiModel: '', payMode: 'test', pric
    mode: 'test' = 연습용(톱니바퀴로 설정 바꾸기 가능)
          'live' = 실제 운영(아래 값으로 고정, 손님에게 톱니바퀴 안 보임) */
 const OWNER_CONFIG = {
-  mode: 'test',
+  mode: 'live',
   aiProv: 'server',   // 'server' = Netlify 금고에 넣은 AI 키 사용
   payMode: 'toss',    // 'toss' = 토스페이먼츠 결제
   price: 2900,        // Netlify의 PRICE 값과 똑같이!
-  tossKey: ''         // 토스 클라이언트 키 (test_ck_... 또는 live_ck_...)
+  tossKey: 'test_ck_c19AWFeMkse7yJLpIHJspCHGNzapY1PWzj'         // 토스 클라이언트 키 (test_ck_... 또는 live_ck_...)
 };
 const LIVE = OWNER_CONFIG.mode === 'live';
 let cfg = LIVE ? Object.assign({}, DEFAULTS, OWNER_CONFIG) : Object.assign({}, DEFAULTS, store.get('cfg', {}));
