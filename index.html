@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FAF8F5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="달빛사주">
+<title>달빛사주</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 조용하고 다정한 밤의 점집. 신비롭지만 과장 없이.
+   IDEA: 크림색 한지 위에 놓인 만세력 한 장.
+   PICTURE: 금빛 테두리의 초승달과 별, 사주 기둥 4개.
+   COLOUR/TYPE: 크림 #FAF8F5, 네이비 #1E293B, 골드 #C8A96A / Noto Sans KR, 한자는 Noto Serif KR.
+   LAYOUT: 440px 모바일 한 열, PC에서는 가운데 앱 프레임. */
+:root{--bg:#FAF8F5;--card:#FFFFFF;--ink:#1E293B;--sub:#5B6475;--line:#ECE6DC;--gold:#C8A96A;--gold2:#E9DCC0;--navy:#1E293B;
+--wood:#DCEFDD;--woodT:#2F6B3A;--fire:#F9DAD6;--fireT:#A43A32;--earth:#F6EBC4;--earthT:#8A6A12;--metal:#EEEFF2;--metalT:#4F5662;--water:#D7E6F7;--waterT:#2B5C8F;
+color-scheme:light}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#EFEAE2;color:var(--ink);font:16px/1.6 'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:clip}
+button,input,select{font:inherit;color:inherit}
+.app{max-width:440px;min-height:100dvh;margin:0 auto;background:var(--bg);position:relative;box-shadow:0 0 60px rgba(30,41,59,.08);padding-bottom:env(safe-area-inset-bottom)}
+@media(min-width:520px){body{padding:24px 0}.app{min-height:calc(100dvh - 48px);border-radius:28px;overflow:hidden}}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;background:rgba(250,248,245,.92);backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:-.02em;background:none;border:0;padding:6px 4px;cursor:pointer}
+.brand svg{width:22px;height:22px}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.icon-btn:hover{background:#F1ECE3}
+.icon-btn svg{width:22px;height:22px}
+.screen{display:none;padding:8px 20px 32px;animation:fade .45s ease}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{font-size:40px;line-height:1.1;margin:0;letter-spacing:-.03em;font-weight:800}
+h2{font-size:22px;line-height:1.3;margin:0 0 4px;letter-spacing:-.02em}
+h3{font-size:17px;margin:0 0 8px}
+p{margin:0}
+.muted{color:var(--sub)}
+.small{font-size:13px}
+/* 시작 화면 */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;min-height:calc(100dvh - 120px);justify-content:space-between;padding-top:12px}
+@media(min-width:520px){.hero{min-height:680px}}
+.sky{width:100%;max-width:340px;aspect-ratio:1;margin:8px auto 0}
+.sky .tw{animation:tw 3.2s ease-in-out infinite}
+.sky .tw:nth-of-type(2n){animation-delay:1.1s}.sky .tw:nth-of-type(3n){animation-delay:2s}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+.moon{animation:float 6s ease-in-out infinite;transform-origin:center}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.sub{font-size:17px;color:var(--sub);margin-top:10px}
+.tag{display:inline-block;font-size:13px;color:#8C6F35;background:#F4ECDC;border-radius:99px;padding:4px 12px;margin-bottom:14px}
+.cta{width:100%;min-height:58px;border:0;border-radius:18px;background:var(--navy);color:#fff;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px rgba(30,41,59,.22);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s}
+.cta:active{transform:scale(.98)}
+.cta.gold{background:linear-gradient(135deg,#D5B97E,#B8954F);color:#1E293B}
+.cta.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-size:16px;min-height:52px}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+.fine{font-size:13px;color:var(--sub);margin-top:12px;text-align:center}
+/* 입력 화면 */
+.field{margin-top:22px}
+.label{display:block;font-weight:700;font-size:15px;margin-bottom:8px}
+.input,select{width:100%;min-height:52px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:0 14px;font-size:16px;outline:none;appearance:none;-webkit-appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231E293B' fill='none' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+.input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,169,106,.25)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{min-height:52px;border-radius:14px;border:1px solid var(--line);background:#fff;font-weight:600;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.row3{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:15px;cursor:pointer;min-height:44px}
+.check input{width:22px;height:22px;accent-color:var(--navy)}
+.err{color:#B4382F;font-size:14px;margin-top:14px;min-height:20px}
+.form-foot{margin-top:26px}
+.help{font-size:13px;color:var(--sub);margin-top:6px}
+/* 로딩 */
+.load{min-height:70dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:26px}
+.orbit{position:relative;width:150px;height:150px}
+.orbit .core{position:absolute;inset:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFF7E3,#E7D3A6 60%,#C8A96A);box-shadow:0 0 40px rgba(200,169,106,.55)}
+.orbit .ring{position:absolute;inset:0;border-radius:50%;border:1px dashed rgba(30,41,59,.18);animation:spin 6s linear infinite}
+.orbit .ring i{position:absolute;width:16px;height:16px;border-radius:50%;top:-8px;left:calc(50% - 8px)}
+.orbit .ring i:nth-child(2){top:auto;bottom:-8px}
+.orbit .ring i:nth-child(3){top:calc(50% - 8px);left:-8px}
+.orbit .ring i:nth-child(4){top:calc(50% - 8px);left:auto;right:-8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-msg{font-size:18px;font-weight:700;min-height:56px;transition:opacity .35s}
+.bar{width:220px;height:6px;border-radius:9px;background:#EDE5D6;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold);border-radius:9px;transition:width .3s}
+/* 결과 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin-top:14px;box-shadow:0 4px 18px rgba(30,41,59,.04)}
+.sum{background:var(--navy);color:#fff;border:0;position:relative;overflow:hidden;padding:24px 20px}
+.sum .k{font-size:14px;color:#D9C9A4}
+.sum .nick{font-size:28px;line-height:1.25;font-weight:800;margin:8px 0 10px;letter-spacing:-.02em;text-wrap:balance}
+.sum .one{color:#E6E9EF;font-size:15px}
+.sum svg{position:absolute;right:-26px;top:-26px;width:110px;opacity:.35;pointer-events:none}
+.sum>*:not(svg){position:relative}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-size:13px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.12);color:#fff}
+.pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:6px}
+.pcol{text-align:center}
+.pcol .h{font-size:13px;color:var(--sub);margin-bottom:6px;font-weight:600}
+.cell{border-radius:14px;padding:10px 2px 8px;margin-bottom:6px;position:relative}
+.cell b{display:block;font-family:'Noto Serif KR',serif;font-size:30px;line-height:1.1}
+.cell span{font-size:12px;display:block;margin-top:2px}
+.cell.me{outline:2px solid var(--gold);outline-offset:2px}
+.cell.none{background:#F4F1EC;color:#A29C93}
+.cell.none b{font-size:22px;padding:5px 0}
+.e-목{background:var(--wood);color:var(--woodT)}.e-화{background:var(--fire);color:var(--fireT)}.e-토{background:var(--earth);color:var(--earthT)}.e-금{background:var(--metal);color:var(--metalT);box-shadow:inset 0 0 0 1px #DADDE3}.e-수{background:var(--water);color:var(--waterT)}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.badge{font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px}
+.bars{display:grid;gap:12px;margin-top:8px}
+.brow{display:grid;grid-template-columns:56px 1fr 64px;align-items:center;gap:10px;font-size:14px}
+.track{height:14px;background:#F2EEE7;border-radius:9px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:9px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.brow .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);white-space:nowrap}
+.note{margin-top:14px;font-size:14px;background:#FBF7EE;border-radius:14px;padding:12px 14px;color:#5E5132}
+.sec{position:relative}
+.sec h3{display:flex;align-items:center;gap:8px;font-size:18px}
+.sec p+p{margin-top:10px}
+.sec .lucky{display:flex;align-items:center;gap:10px;margin-top:12px;padding:12px;border-radius:14px;background:#FAF8F5}
+.sw{width:34px;height:34px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.habit{margin:10px 0 0;padding-left:20px}
+.habit li+li{margin-top:6px}
+.locked .body{filter:blur(6px);user-select:none;pointer-events:none;max-height:150px;overflow:hidden}
+.lockbox{display:none}
+.locked .lockbox{display:flex;position:absolute;inset:52px 12px 12px;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;background:linear-gradient(rgba(255,255,255,.2),rgba(255,255,255,.9) 40%);border-radius:16px}
+.lockbox button{min-height:46px;padding:0 18px;border:0;border-radius:14px;background:var(--navy);color:#fff;font-weight:700;cursor:pointer}
+.premium{background:linear-gradient(160deg,#FFFDF8,#F7EEDB);border-color:var(--gold2)}
+.premium .price{font-size:26px;font-weight:800}
+.premium ul{margin:10px 0 14px;padding-left:20px;font-size:15px}
+.src{font-size:12px;color:var(--sub);margin-top:6px;text-align:right}
+.actions{display:grid;gap:10px;margin-top:20px}
+.disc{font-size:12px;color:#8B8478;text-align:center;margin-top:18px;line-height:1.5}
+/* 시트(설정·결제) */
+.dim{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.dim.on{display:flex;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}}
+.sheet{width:100%;max-width:440px;max-height:92dvh;overflow:auto;background:var(--bg);border-radius:24px 24px 0 0;padding:10px 20px calc(24px + env(safe-area-inset-bottom));animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+.grab{width:40px;height:5px;border-radius:9px;background:#DCD4C6;margin:4px auto 14px}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sheet .field{margin-top:16px}
+.pay-methods{display:grid;gap:8px;margin-top:10px}
+.pm{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 14px;border:1px solid var(--line);border-radius:14px;background:#fff;cursor:pointer;font-weight:600;text-align:left}
+.pm[aria-pressed=true]{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy) inset}
+.pm .dot{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;flex:none}
+.receipt{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px;font-size:15px}
+.receipt div{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.receipt .t{font-weight:800;border-top:1px dashed var(--line);margin-top:6px;padding-top:9px}
+.testflag{display:inline-block;font-size:12px;font-weight:700;color:#8C6F35;background:#F4ECDC;border-radius:6px;padding:2px 8px}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.stat div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.stat b{display:block;font-size:20px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--navy);color:#fff;padding:12px 18px;border-radius:14px;font-size:15px;opacity:0;pointer-events:none;transition:.3s;z-index:40;max-width:min(92vw,400px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.spinner{width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite}
+.linkbox{margin-top:10px;display:none}
+.linkbox.on{display:block}
+.linkbox input{font-size:13px}
+:focus-visible{outline:3px solid rgba(200,169,106,.7);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="brand" id="homeBtn" aria-label="처음 화면으로">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.3A7 7 0 0 1 15.5 3.5Z" fill="#C8A96A"/></svg>
+      달빛사주
+    </button>
+    <button class="icon-btn" id="gearBtn" aria-label="설정">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+    </button>
+  </header>
+
+  <!-- [1단계] 시작 화면 -->
+  <section class="screen on" id="s-landing">
+    <div class="hero">
+      <svg class="sky" viewBox="0 0 320 320" aria-hidden="true">
+        <defs>
+          <radialGradient id="glow"><stop offset="0" stop-color="#F3E5C2" stop-opacity=".9"/><stop offset="1" stop-color="#F3E5C2" stop-opacity="0"/></radialGradient>
+          <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6E0"/><stop offset="1" stop-color="#C8A96A"/></linearGradient>
+          <path id="st" d="M0-7 1.6-1.6 7 0 1.6 1.6 0 7-1.6 1.6-7 0-1.6-1.6Z"/>
+        </defs>
+        <circle cx="160" cy="160" r="150" fill="url(#glow)"/>
+        <circle cx="160" cy="160" r="118" fill="none" stroke="#C8A96A" stroke-opacity=".35" stroke-dasharray="2 6"/>
+        <circle cx="160" cy="160" r="92" fill="none" stroke="#1E293B" stroke-opacity=".08"/>
+        <g class="moon"><path d="M188 86a78 78 0 1 0 44 128 66 66 0 0 1-44-128Z" fill="url(#mg)"/>
+          <circle cx="150" cy="150" r="7" fill="#C8A96A" opacity=".25"/><circle cx="128" cy="190" r="10" fill="#C8A96A" opacity=".2"/><circle cx="168" cy="205" r="5" fill="#C8A96A" opacity=".25"/></g>
+        <g fill="#1E293B">
+          <use class="tw" href="#st" x="244" y="96"/><use class="tw" href="#st" x="74" y="84" transform="scale(1)"/>
+          <use class="tw" href="#st" x="258" y="226"/><use class="tw" href="#st" x="58" y="232"/>
+        </g>
+        <g fill="#C8A96A"><circle class="tw" cx="214" cy="60" r="2.5"/><circle class="tw" cx="96" cy="130" r="2"/><circle class="tw" cx="276" cy="160" r="2.5"/><circle class="tw" cx="40" cy="160" r="2"/><circle class="tw" cx="200" cy="276" r="2.5"/><circle class="tw" cx="112" cy="272" r="2"/></g>
+      </svg>
+      <div>
+        <span class="tag">생년월일시 8글자로 보는 사주</span>
+        <h1>달빛사주</h1>
+        <p class="sub">AI가 풀어주는 나만의 인생 지도</p>
+      </div>
+      <div style="width:100%">
+        <button class="cta" id="startBtn">내 사주 무료로 보기</button>
+        <p class="fine">가입 없이 1분이면 끝나요 · 입력한 정보는 내 휴대폰에만 남아요</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- [2단계] 정보 입력 -->
+  <section class="screen" id="s-form">
+    <h2>나의 태어난 순간을 알려주세요</h2>
+    <p class="muted small">정확할수록 풀이가 더 정확해져요.</p>
+    <form id="form" novalidate>
+      <div class="field">
+        <label class="label" for="name">이름 (닉네임도 좋아요)</label>
+        <input class="input" id="name" maxlength="12" placeholder="예) 달님" autocomplete="nickname">
+      </div>
+      <div class="field">
+        <span class="label">성별</span>
+        <div class="seg" id="gender"><button type="button" data-v="F" aria-pressed="true">여성</button><button type="button" data-v="M" aria-pressed="false">남성</button></div>
+      </div>
+      <div class="field">
+        <span class="label">달력 종류</span>
+        <div class="seg" id="cal"><button type="button" data-v="solar" aria-pressed="true">양력</button><button type="button" data-v="lunar" aria-pressed="false">음력</button></div>
+        <label class="check" id="leapWrap" hidden><input type="checkbox" id="leap"> 윤달이에요</label>
+      </div>
+      <div class="field">
+        <span class="label">생년월일</span>
+        <div class="row3"><select id="y" aria-label="태어난 해"></select><select id="m" aria-label="태어난 달"></select><select id="d" aria-label="태어난 날"></select></div>
+      </div>
+      <div class="field">
+        <span class="label">태어난 시간</span>
+        <div class="row2"><select id="hh" aria-label="시"></select><select id="mm" aria-label="분"></select></div>
+        <label class="check"><input type="checkbox" id="unknown"> 태어난 시간을 몰라요</label>
+        <p class="help">시간을 모르면 6글자(년·월·일)로 풀어드려요.</p>
+      </div>
+      <p class="err" id="err" role="alert"></p>
+      <div class="form-foot"><button class="cta" type="submit">사주 풀이 시작하기</button></div>
+    </form>
+  </section>
+
+  <!-- [3단계] 로딩 -->
+  <section class="screen" id="s-loading">
+    <div class="load">
+      <div class="orbit"><div class="ring"><i class="e-목"></i><i class="e-화"></i><i class="e-수"></i><i class="e-금"></i></div><div class="core"></div></div>
+      <p class="load-msg" id="loadMsg">사주팔자 8글자를 세우고 있어요...</p>
+      <div class="bar"><i id="loadBar"></i></div>
+    </div>
+  </section>
+
+  <!-- [4단계] 결과 -->
+  <section class="screen" id="s-result"><div id="result"></div></section>
+</div>
+
+<!-- 결제 시트 -->
+<div class="dim" id="payDim" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="sheet-h"><h2 id="payTitle">프리미엄 풀이 열기</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <p class="muted small" id="payModeText"></p>
+    <div class="receipt">
+      <div><span>상품</span><span>달빛사주 프리미엄 풀이</span></div>
+      <div><span>포함</span><span>재물운 · 연애운 · 개운법</span></div>
+      <div class="t"><span>결제 금액</span><span id="payPrice"></span></div>
+    </div>
+    <span class="label" style="margin-top:16px">결제 수단</span>
+    <div class="pay-methods" id="payMethods">
+      <button class="pm" data-v="CARD" aria-pressed="true"><span class="dot" style="background:#1E293B">카드</span>신용·체크카드</button>
+      <button class="pm" data-v="TOSSPAY" aria-pressed="false"><span class="dot" style="background:#5B6B86">간편</span>토스페이</button>
+      <button class="pm" data-v="KAKAOPAY" aria-pressed="false"><span class="dot" style="background:#C8A96A;color:#1E293B">간편</span>카카오페이</button>
+    </div>
+    <div style="margin-top:20px"><button class="cta gold" id="payGo"></button></div>
+    <p class="fine" id="payFine"></p>
+  </div>
+</div>
+
+<!-- 설정 시트 -->
+<div class="dim" id="setDim" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="sheet-h"><h2 id="setTitle">설정</h2><button class="icon-btn" data-close aria-label="닫기">✕</button></div>
+    <h3 style="margin-top:8px">🤖 AI 풀이 연결</h3>
+    <div class="field"><label class="label" for="aiProv">AI 종류</label>
+      <select id="aiProv"><option value="mock">예시 풀이 (API 키 없이)</option><option value="openai">OpenAI (ChatGPT)</option><option value="gemini">Google Gemini</option><option value="server">내 서버 (/api/reading)</option></select></div>
+    <div class="field"><label class="label" for="aiKey">API 키</label>
+      <input class="input" id="aiKey" type="password" autocomplete="off" placeholder="sk-... 또는 AIza..."><p class="help">키는 이 휴대폰 브라우저에만 저장돼요. 실제 운영할 땐 '내 서버'를 쓰세요.</p></div>
+    <div class="field"><label class="label" for="aiModel">모델 이름</label><input class="input" id="aiModel" placeholder="비워두면 기본값"></div>
+    <button class="cta ghost" id="aiTest" style="margin-top:12px">연결 테스트</button>
+
+    <h3 style="margin-top:28px">💳 결제(과금) 설정</h3>
+    <div class="field"><label class="label" for="payMode">결제 방식</label>
+      <select id="payMode"><option value="test">테스트 결제 (진짜 돈 안 나가요)</option><option value="toss">토스페이먼츠 (실제/테스트 키)</option><option value="free">무료로 모두 공개</option></select></div>
+    <div class="field"><label class="label" for="price">프리미엄 가격 (원)</label><input class="input" id="price" type="number" inputmode="numeric" min="100" step="100"></div>
+    <div class="field"><label class="label" for="tossKey">토스페이먼츠 클라이언트 키</label><input class="input" id="tossKey" autocomplete="off" placeholder="test_ck_... 또는 live_ck_..."><p class="help">시크릿 키(…_sk_)는 절대 여기에 넣지 마세요. 서버에만 넣어요.</p></div>
+    <h3 style="margin-top:28px">📊 판매 기록 (이 기기)</h3>
+    <div class="stat"><div><span class="small muted">결제 건수</span><b id="stCount">0건</b></div><div><span class="small muted">매출 합계</span><b id="stSum">0원</b></div></div>
+    <button class="cta ghost" id="resetSales" style="margin-top:10px">기록 지우기</button>
+    <div style="margin-top:20px"><button class="cta" id="saveSet">저장하기</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>/* korean-lunar-calendar (MIT) — 음력↔양력 변환 */
+(function(e,t){typeof exports==`object`&&typeof module<`u`?module.exports=t():typeof define==`function`&&define.amd?define([],t):(e=typeof globalThis<`u`?globalThis:e||self,e.KoreanLunarCalendar=t())})(this,function(){var e={KOREAN_LUNAR_MIN_VALUE:10000101,KOREAN_LUNAR_MAX_VALUE:20501118,KOREAN_SOLAR_MIN_VALUE:10000213,KOREAN_SOLAR_MAX_VALUE:20501231,KOREAN_LUNAR_BASE_YEAR:1e3,SOLAR_LUNAR_DAY_DIFF:43,LUNAR_SMALL_MONTH_DAY:29,LUNAR_BIG_MONTH_DAY:30,SOLAR_SMALL_YEAR_DAY:365,SOLAR_BIG_YEAR_DAY:366,SOLAR_DAYS:[31,28,31,30,31,30,31,31,30,31,30,31,29],KOREAN_CHEONGAN:[44049,51012,48337,51221,47924,44592,44221,49888,51076,44228].map(e=>String.fromCharCode(e)),KOREAN_GANJI:[51088,52629,51064,47896,51652,49324,50724,48120,49888,50976,49696,54644].map(e=>String.fromCharCode(e)),KOREAN_GAPJA_UNIT:[45380,50900,51068].map(e=>String.fromCharCode(e)),CHINESE_CHEONGAN:[30002,20057,19993,19969,25098,24049,24218,36763,22764,30328].map(e=>String.fromCharCode(e)),CHINESE_GANJI:[23376,19985,23493,21359,36784,24051,21320,26410,30003,37193,25100,20133].map(e=>String.fromCharCode(e)),CHINESE_GAPJA_UNIT:[24180,26376,26085].map(e=>String.fromCharCode(e)),INTERCALATION_STR:[50980,38287].map(e=>String.fromCharCode(e)),KOREAN_LUNAR_DATA:[2194016855,2197734699,2193886506,2194017621,3271595437,2193884522,2194016621,2197837021,3267626157,2193885773,2197827149,2193885990,3271600982,2194016981,2193883994,2197842298,3267758427,2193884315,2197834395,2193885771,3271674533,2193884842,2194016981,2197852893,3267625653,2194016599,2197705902,2194017431,3267626571,2197759306,2194017705,2197857974,3267757677,2193883758,2197907758,2193885486,3267628182,2197835157,2193886538,2197867881,3267627864,2194148715,2197918315,2193883741,3267627307,2197838507,2193885845,2193886026,3271696043,2193883861,2197927258,2194015419,3267625563,2197845303,2193884459,2193884821,3271571285,2193884842,2198063797,2193883765,3267626166,2197850718,2193885782,2193886502,3271581350,2194017621,2193884586,2197822826,3267758445,2197861551,2193884317,2193885773,3271589165,2193885862,2194017109,2197833173,3267625818,2194016605,2197885299,2193884251,3271596623,2193884747,2193885861,2197842793,3267757749,2193883866,2197826230,2194016567,3271476375,2194017431,2193884747,2197718698,3267759525,2193884596,2198030957,2193883822,3267628641,2197826862,2193886358,2197855565,2193886538,2194017637,2197906837,2194015581,3267625581,2197826141,2193885483,2197858967,3267627669,2193886026,2197850970,2194016981,3267757403,2197832375,2193884247,2193884459,3271564587,2193884821,2197853997,2193884586,3267758773,2197837037,2193884342,2194016855,3271504974,2193886502,2197929618,2194017621,3267626410,2197850554,2194016621,2193884334,3271576221,2193885773,2193886501,2197827365,3267627860,2198056297,2193883866,2194016605,3271648411,2193884315,2193885771,2197834571,3267626661,2197863251,2193884852,2194016950,3271657814,2194016663,2193884311,2197833367,3267626315,2197735077,2194017701,2193884588,3271797429,2193883758,2193885486,2197843118,3267628182,2193886538,2197827402,2194017621,3271603563,2194015579,2193883741,2197846333,3267627303,2193885845,2197904661,2193886026,3267758933,2197885653,2194015451,2197721694,3267758679,2193884459,2197842603,2193884821,3267626666,2197830570,2194016949,2197861559,3267626158,2194016855,2197714222,2193886502,3267759763,2197837525,2193884586,2194016693,3271566701,2193884334,2197924429,2193885773,3267628326,2197843301,2193886034,2194017642,3271567066,2194016605,2197931165,2193884315,3267627595,2197850795,2193884837,2193886036,3271576500,2194016950,2194016603,2197824823,3267626135,2197853775,2193884491,2193884837,3271653061,2193884588,2194016950,2197895278,3267627310,2197867671,2193886358,2193886538,3271593386,2194017109,2193884522,2197969627,3267625565,2193885486,2197826859,2193885845,3271597389,2193885994,2194017109,2197845365,3267626202,2194016859,2197833047,2193884459,3271674515,2193884819,2193884842,2197850842,3267758821,2193884342,2197834414,2194016855,3267626279,2197759270,2194017875,2197857995,3267626410,2194015661,2197906605,2193884334,3267627598,2197835085,2193886502,2197863763,3267627858,2194017130,2197919082,2194015575,3267626141,2197903899,2193885771,2193885861,3271564965,2193886034,2197863258,2194016950,3267758427,2197841079,2193884311,2193884747,3271571275,2193884837,2197862067,2193884588,3267758774,2197914285,2193884318,2193885773,3271581003,2193885989,2193886034,2197892690,3267758938,2197858654,2194016603,2193884315,3271584343,2193885771,2193885861,2197834661,3267626708,2197867222,2194016950,2194016567,2197849247,2193884311,2193884747,2197706442,3267759525,2193884586,2197822828,2194016878,3271604527,2193885486,2193886358,2197847381,3267628362,2194017621,2197894485,2193884522,3267758701,2197822045,2193885483,2197850715,3267627669,2193885994,2197904170,2194016981,3267626202,2197822650,2194016855,2197853487,3267626279,2193884819,2197845683,2193884842,3267758773,2197828981,2193884342,2197867111,3267627566,2193886486,2197851798,2193886538,3267759530,2197837290,2194015597,2193884334,3271632989,2193885741,2197859607,2193885861,3267627858,2197847412,2194016986,2194015581,3271570747,2193884251,2193885739,2197887531,3267627685,2197855061,2193884850,2194016982,3271644470,2194016567,2193884247,2197830231,3267626283,2197727910,2194017685,2193884586,3271654060,2194016878,2193884462,2197830830,3267627606,2197863723,2193886506,2194017621,3271595437,2193884522,2194016877,2197837149,3267626283,2193885837,2197827157,2193885994,3271600982,2194016981,2193884378,2197842554,3267758679,2193884443,2197899799,2193884755,3271673513,2193884586,2194016949,2197852861,3267625654,2194016823,2197706030,2193886486,2194017867,2197698386,2194017706,2197927348,3267757421,2193883822,2197846589,2193885741,3267628309,2197835157,2193886034,2197867369,3267758810,2194015581,2197918299,2193884251,3267627563,2197838507,2193885845,2193886034,3271564970,2194016950,2197865819,2194015415,3267626071,2197845303,2193884459,2193884821,3271640725,2193884586,2197867189,2194016878,3267626158,2197850718,2193885782,2193886506,3271585450,2194017621,2193884522,2197891418,3267758429,2197861551,2193884315,2193885773,3271589165,2193885994,2194017109,2197833173,3267625690,2194016603,2197885271,2193884315,3271596623,2193884747,2193884841,2197842666,3267757749,2193883830,2197826222,2194016567,3271537814,2193886358,2194017867,2197714610,3267759530,2194015661,2197828461,2193883758,3267627310,2197826861,2193886357,2197855565,3267627850,2194017129,2197906778,2194015579,3267625565,2197826139,2193885483,2197858967,3267626645,2193885002,2197850970,2194016950,3267757371,2197832375,2193883735,2193884459,3271564587,2193884821,2197853869,2193884586,3267758773,2197837037,2193884334,2194016855,3271504974,2193886506,2197929364,2194017109,2193884522,2197846394,2194016605,2193884334,3271576219,2193885773,2193886501,2197887658,3267758933,2197853549,2193883866,2194016603,3271578807,2193884311,2193885771,2197834571,3267626665,2197867221,2194015669,2193883830,3271592286,2194016559,2193884311,2197702294,3267628362,2197868197,2194017641,2194015597,3271664309,2193883758,2193885486,2197843117,3267628181,2193886538,2197827402,2194017113,3271607661,2194015579,2193883741,2197846331,3267627307,2193885845,2197904149,2193884874,3267758805,2197885622,2194015419,2197852767,3267625559,2193884459,2197711530,2194017941,3267626666,2197830570,2194016949,2197861559,3267626158,2194016855,2197714221,2193886502,3267759509,2197837269,2193884522,2194016621,3271566685,2193884334,2197858895,2193885773,3267628325,2197843305,2194017109,2193883994,3271568058,2194016603,2197931163,2193884311,3267627595,2197850923,2193884837,2193884884,3271772853,2193883830,2194016567,2197824815,3267626135,2197722702,2193886538,2194017957,3271648937,2194015597,2193883830,2197895262,3267627310,2197863575,2193885845,2193886538,3271593386,2194017101,2194015595,2197832411,3267625565,2193885485,2197826859,2193885845,3271596877,2193884842,2194016981,2197841269,3267757243,2193883739,2197894231,2193884459,3271539348,2194017941,2193884842,2197850842,3267758517,2193884342,2197834414,2194016847,3267495206,2197892390,2194017621,2197923241,3267626346,2194016621,2197906589,2193884318,3267627597,2197835085,2193886501,2197863763,3267627860,2194017114,2197915994,2194016603,3267626139,2197834391,2193885771,2193885861,3271564965,2193884884,2197994203,2193883830,3267758391,2197841071,2193884311,2193884747,3271440202,2194017701,2197862069,2194015597,3267625646,2197846334,2193885486,2193886358,3271646485,2193886538,2194017701,2197894485,3267626346,2197846650,2194016861,2193885485,3271584427,2193885845,2193886026,2197834666,3267758805,2193884506,2197891258,2194016859,3271587127,2193884459,2193884819,2197903125,3267626666,2194016981,2197829045,2193884342,3271592542,2193885774,2193886502,2197843622,3267628370,2194017706,2197898858,2194015597,3267626158,2197830301,2193885773,2197847339,3267627813,2193886546,2197904724,2194017114,3267757405,2197828955,2193884315,2197845591,2193885771,2193885861,2197842789,2193884882,3267758810,2197833142,2194016567,2193884311,3271571095,2193884749,2197714602,2194017701,3267626410,2197838572,2194016942,2193885486,3271572782,2193886358,2197916997,2193886538,3267759445,2197906837,2193884522,2194016877,3271574877,2193884461,2193885845,2197896341,3267627850,2197912394,2194016981,2193884506,3271645754,2194016859,2193884459,2197899799,3267626643,2197853867,2193884842,2194016949,3271582965,2193884342,2194016855,2197701934,3267628310,2194017939,2197698386,2194017706,3271652778,2194015597,2193884334,2197903901,3267627565,2193886485,2197835173,2193886034,3271597418,2194016986,2194015581,2197906075,3267626075,2193885739,2197838635,2193885845,3267627858,2197891762,2194016982,2197910870,3267757367,2193884247,2197837399,2193884459,3267626645,2197829525,2193884586,2197858998,3267758701,2193884334,2197842542,2193885782,3267628330,2197839530,2194017621,2193884586,3271572330,2194016877,2197845181,2193884331,3267627661,2197839189,2193885994,2194017109,3271574997,2193884378,2194016605,2197824855,3267626139,2197842583,2193884747,2193884841,2197834666,2194015925,2193883834,2197826230,3267758391,2197710126,2193886486,2194017867,3271448274,2194017705,2194015669,2197828461,3267625646,2193885742,2197827117,2193886357,3271585109,2193886034,2194017129,2197833178,3267757405,2193883741,2197830235,2193885739,3271654027,2193885845,2193886026,2197904170,3267758805,2194015579,2197832375,2193883735,3271595311,2193884459,2193884821,2197841621,3267626410,2194016949,2197833069,2193884334,3267758679,2197763158,2193886506,2197913226,3267759445,2193884586,2197838554,2194016605,3267626158,2197834411,2193885773,2197851435,3267627817,2194017109,2197845365,2193883866,3267758429,2197837015,2193884315,2193885771,3271637579,2193884841,2197850841,2194015925,3267625654,2197903670,2194016567,2193884311,3271444118,2193886794,2197860006,2194017705,3267757485,2197906093,2193883822,2193885486,3271580845,2193886357,2193886538,2197896522,3267758953,2197845370,2194015579,2193883741,3271579995,2193885483,2193885845,2197835157,3267627850,2194017109,2197825237,2194015579,3271582327,2193883735,2193884459,2197707434,3267759765,2193884842,2197830570,2194016949,2197849277,2193884334,2194016855,2197706061,3267628326,2194017685,2197898837,2193884522,3267758509,2197824861,2193884334,2197842523,3267627597,2193886501,2197839273,2194017109,3267626346,2197826266,2194016605,2197845179,3267626139,2193885771,2197838667,2193884841,3267627732,2197965749,2193883830,2194016603,3271566647,2193884311,2197710422,2193886794,3267759781,2197903017,2194015669,2193883830,3271637166,2193885486,2197912717,2193886357,3267628362,2197908874,2194017129,2194015597,3271639643,2193883741,2193885485,2197826859,3267627669,2197847381,2193886026,2194017109,3271644501,2194015451,2193883739,2197895255,3267626283,2197850779,2193884821,2193884842,3271584490,2194016949,2193884342,2197834414,3267758679,2193884455,2197698342,2194017685,3271587509,2193884522,2194016685,2197837021,3267626158,2193885774,2197835085,2193886501,3271593305,2193886036,2194017642,2197907802,3267758427,2193884315,2197834395,2193885771,3271600935,2193884837,2193884884,2197973877,3267625654,2194016603,2197836983,2193884311,3267626571,2197698378,2194017957,2197849817,3267757485,2193883830,2197838190,2193885486,3267628182,2197835413,2193886538,2194017701,3271567189,2193884524,2197977787,2193883741,3267627309,2197839019,2193885845,2193886026,3271637834,2194017109,2197853533,2193884346,3267758683,2197837143,2193884459,2193885845,3271576469,2193884842,2194016981,2197825205,3267626166,2197842542,2194016855,2193884455,3271448230,2194017683,2193884586,2197830506,3267758445,2197861551,2193884334,2193885773,3271650573,2193886501,2193886546,2197839316,3267758954,2194016621,2197824859,2193884315,3271588439,2193885771,2193885989,2197904165,3267626708,2194016986,2197895350]},t={YEAR_CHEONGAN:6,YEAR_GANJI:0,MONTH_CHEONGAN:3,MONTH_GANJI:1,DAY_CHEONGAN:4,DAY_GANJI:2};return class{constructor(){this.cumulativeLunarYearDays=new Map,this.cumulativeSolarYearDays=new Map,this.solarCalendar={year:0,month:0,day:0},this.lunarCalendar={year:0,month:0,day:0,intercalation:!1};let e=new Date;this.setSolarDate(e.getFullYear(),e.getMonth()+1,e.getDate())}getLunarData(t){return e.KOREAN_LUNAR_DATA[t-e.KOREAN_LUNAR_BASE_YEAR]}getLunarIntercalationMonth(e){return e>>12&15}getLunarYearDays(e){return this.getLunarData(e)>>17&511}getLunarMonthDays(t,n,r){let i=this.getLunarData(t);return(r&&this.getLunarIntercalationMonth(i)===n?(i>>16&1)>0:(i>>12-n&1)>0)?e.LUNAR_BIG_MONTH_DAY:e.LUNAR_SMALL_MONTH_DAY}getLunarDaysBeforeBaseYear(e){return this.accumulateYearDays(e,this.cumulativeLunarYearDays,e=>this.getLunarYearDays(e))}getLunarDaysBeforeBaseMonth(t,n,r){let i=0;if(t>=e.KOREAN_LUNAR_BASE_YEAR&&n>0){for(let e=1;e<n+1;e++)i+=this.getLunarMonthDays(t,e,!1);if(r){let e=this.getLunarIntercalationMonth(this.getLunarData(t));e>0&&e<n+1&&(i+=this.getLunarMonthDays(t,e,!0))}}return i}getLunarAbsDays(e,t,n,r){let i=this.getLunarDaysBeforeBaseYear(e-1)+this.getLunarDaysBeforeBaseMonth(e,t-1,!0)+n;return r&&this.getLunarIntercalationMonth(this.getLunarData(e))===t&&(i+=this.getLunarMonthDays(e,t,!1)),i}isSolarIntercalationYear(e){return(e>>30&1)>0}getSolarYearDays(t){return this.isSolarIntercalationYear(this.getLunarData(t))?e.SOLAR_BIG_YEAR_DAY:e.SOLAR_SMALL_YEAR_DAY}getSolarMonthDays(t,n){return n===2&&this.isSolarIntercalationYear(this.getLunarData(t))?e.SOLAR_DAYS[12]:e.SOLAR_DAYS[n-1]}getSolarDaysBeforeBaseYear(e){return this.accumulateYearDays(e,this.cumulativeSolarYearDays,e=>this.getSolarYearDays(e))}accumulateYearDays(t,n,r){let i=n.get(t);if(i!==void 0)return i;let a=e.KOREAN_LUNAR_BASE_YEAR,o=n.get(t-1),s=0;if(o!==void 0&&t>a)s=o+r(t);else for(let e=a;e<t+1;e++)s+=r(e);return n.set(t,s),s}getSolarDaysBeforeBaseMonth(e,t){let n=0;for(let r=1;r<t+1;r++)n+=this.getSolarMonthDays(e,r);return n}getSolarAbsDays(t,n,r){return this.getSolarDaysBeforeBaseYear(t-1)+this.getSolarDaysBeforeBaseMonth(t,n-1)+r-e.SOLAR_LUNAR_DAY_DIFF}setSolarDateByLunarDate(e,t,n,r){let i=this.getLunarAbsDays(e,t,n,r),a=i<this.getSolarAbsDays(e+1,1,1)?e:e+1,o=0,s=0;for(let e=12;e>0;e--){let t=this.getSolarAbsDays(a,e,1);if(i>=t){o=e,s=i-t+1;break}}this.solarCalendar={year:a,month:o,day:s}}setLunarDateBySolarDate(e,t,n){let r=this.getSolarAbsDays(e,t,n),i=r>=this.getLunarAbsDays(e,1,1,!1)?e:e-1,a=0,o=0,s=!1;for(let e=12;e>0;e--)if(r>=this.getLunarAbsDays(i,e,1,!1)){a=e,this.getLunarIntercalationMonth(this.getLunarData(i))===e&&(s=r>=this.getLunarAbsDays(i,e,1,!0)),o=r-this.getLunarAbsDays(i,a,1,s)+1;break}this.lunarCalendar={year:i,month:a,day:o,intercalation:s}}checkValidDate(t,n,r,i,a){let o=!1;if(!Number.isInteger(r)||!Number.isInteger(i)||!Number.isInteger(a))return!1;let s=r*1e4+i*100+a;if((t?e.KOREAN_LUNAR_MIN_VALUE:e.KOREAN_SOLAR_MIN_VALUE)<=s&&(t?e.KOREAN_LUNAR_MAX_VALUE:e.KOREAN_SOLAR_MAX_VALUE)>=s&&i>0&&i<13&&a>0){if(t&&n&&this.getLunarIntercalationMonth(this.getLunarData(r))!==i)return!1;let e=t?this.getLunarMonthDays(r,i,n):this.getSolarMonthDays(r,i);if(!t&&r===1582&&i===10&&a>4&&a<15)return!1;a<=e&&(o=!0)}return o}setLunarDate(e,t,n,r){let i=!1;return this.checkValidDate(!0,r,e,t,n)&&(this.lunarCalendar={year:e,month:t,day:n,intercalation:r&&this.getLunarIntercalationMonth(this.getLunarData(e))===t},this.setSolarDateByLunarDate(e,t,n,r),i=!0),i}setSolarDate(e,t,n){let r=!1;return this.checkValidDate(!1,!1,e,t,n)&&(this.solarCalendar={year:e,month:t,day:n},this.setLunarDateBySolarDate(e,t,n),r=!0),r}computeGapJa(){let n=this.lunarCalendar,r=this.getLunarAbsDays(n.year,n.month,n.day,!!n.intercalation);if(r<=0)return{cheongan:{year:0,month:0,day:0},ganji:{year:0,month:0,day:0}};let i=e.KOREAN_LUNAR_BASE_YEAR,a=e.KOREAN_CHEONGAN.length,o=e.KOREAN_GANJI.length,s=n.month+12*(n.year-i);return{cheongan:{year:(n.year+t.YEAR_CHEONGAN-i)%a,month:(s+t.MONTH_CHEONGAN)%a,day:(r+t.DAY_CHEONGAN)%a},ganji:{year:(n.year+t.YEAR_GANJI-i)%o,month:(s+t.MONTH_GANJI)%o,day:(r+t.DAY_GANJI)%o}}}getGapJaIndex(){return this.computeGapJa()}getGapja(t){let n=this.getGapJaIndex(),r=t?e.CHINESE_CHEONGAN:e.KOREAN_CHEONGAN,i=t?e.CHINESE_GANJI:e.KOREAN_GANJI,a=t?e.CHINESE_GAPJA_UNIT:e.KOREAN_GAPJA_UNIT,o=t?`${e.INTERCALATION_STR[1]}${e.CHINESE_GAPJA_UNIT[1]}`:`${e.INTERCALATION_STR[0]}${e.KOREAN_GAPJA_UNIT[1]}`;return{year:`${r[n.cheongan.year]}${i[n.ganji.year]}${a[0]}`,month:`${r[n.cheongan.month]}${i[n.ganji.month]}${a[1]}`,day:`${r[n.cheongan.day]}${i[n.ganji.day]}${a[2]}`,intercalation:this.lunarCalendar.intercalation?o:``}}getKoreanGapja(){return this.getGapja()}getChineseGapja(){return this.getGapja(!0)}getLunarCalendar(){return{...this.lunarCalendar}}getSolarCalendar(){return{...this.solarCalendar}}}});
+</script>
+<script>// 만세력 엔진 (사주팔자 계산) — 브라우저와 Node 양쪽에서 동작
+const SAJU = (() => {
+  const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  const STEMS_KO = ['갑','을','병','정','무','기','경','신','임','계'];
+  const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const BRANCHES_KO = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+  const STEM_EL = ['목','목','화','화','토','토','금','금','수','수'];
+  const BRANCH_EL = ['수','토','목','목','토','화','화','토','금','금','토','수'];
+  const rad = d => d * Math.PI / 180;
+
+  // 태양의 겉보기 황경(도) — Meeus 저정밀 공식, 오차 약 0.01°
+  function sunLongitude(jd) {
+    const T = (jd - 2451545) / 36525;
+    const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
+    const M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T;
+    const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(rad(M))
+      + (0.019993 - 0.000101 * T) * Math.sin(rad(2 * M)) + 0.000289 * Math.sin(rad(3 * M));
+    const om = 125.04 - 1934.136 * T;
+    const lon = L0 + C - 0.00569 - 0.00478 * Math.sin(rad(om));
+    return ((lon % 360) + 360) % 360;
+  }
+  // 그레고리력 날짜 → 율리우스 일수(정오 기준 정수)
+  function jdn(y, m, d) {
+    const a = Math.floor((14 - m) / 12), yy = y + 4800 - a, mm = m + 12 * a - 3;
+    return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+  }
+
+  // y,m,d: 양력 / hour,minute: 한국시간(KST), hour=null 이면 시간 모름
+  function calc(y, m, d, hour, minute) {
+    const known = hour !== null && hour !== undefined;
+    const h = known ? hour : 12, mi = known ? minute : 0;
+    // 1) 태어난 순간의 태양 황경 → 절기(월) 판단
+    const utcMs = Date.UTC(y, m - 1, d, h - 9, mi);           // KST → UTC
+    const jd = utcMs / 86400000 + 2440587.5 + 69 / 86400;     // +ΔT
+    const L = sunLongitude(jd);
+    const mIdx = Math.floor(((L - 315 + 360) % 360) / 30);    // 0=인월(입춘~), … 11=축월
+    // 2) 년주: 입춘 전이면 전년도
+    let sy = y;
+    if (m <= 2 && mIdx >= 10) sy = y - 1;
+    const yS = ((sy - 4) % 10 + 10) % 10, yB = ((sy - 4) % 12 + 12) % 12;
+    // 3) 월주: 갑·기년은 병인월부터 (오호둔)
+    const mS = ((yS % 5) * 2 + 2 + mIdx) % 10, mB = (mIdx + 2) % 12;
+    // 4) 일주: 23:30 이후는 다음 날 자시로 봄
+    let dayJ = jdn(y, m, d);
+    const tMin = h * 60 + mi;
+    if (known && tMin >= 23 * 60 + 30) dayJ += 1;
+    const g = (dayJ + 49) % 60;
+    const dS = g % 10, dB = g % 12;
+    // 5) 시주: 한국 표준 경도 보정으로 자시 = 23:30~01:29 (오자둔)
+    let hour_ = null;
+    if (known) {
+      const hB = Math.floor(((tMin + 30) % 1440) / 120);
+      const hS = ((dS % 5) * 2 + hB) % 10;
+      hour_ = { s: hS, b: hB };
+    }
+    const pillars = { hour: hour_, day: { s: dS, b: dB }, month: { s: mS, b: mB }, year: { s: yS, b: yB } };
+    // 6) 오행 개수
+    const count = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
+    for (const p of Object.values(pillars)) if (p) { count[STEM_EL[p.s]]++; count[BRANCH_EL[p.b]]++; }
+    return { pillars, count, dayMaster: dS, sunLon: L };
+  }
+  return { calc, STEMS, STEMS_KO, BRANCHES, BRANCHES_KO, STEM_EL, BRANCH_EL };
+})();
+
+</script>
+<script>
+{
+/* ============ 0. 작은 도우미들 ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('dalbit_' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('dalbit_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+const toast = (msg, ms = 2600) => { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), ms); };
+const won = n => Number(n).toLocaleString('ko-KR') + '원';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* 설정값 (설정 화면에서 바꿀 수 있어요) */
+const DEFAULTS = { aiProv: 'mock', aiKey: '', aiModel: '', payMode: 'test', price: 2900, tossKey: '' };
+/* ★★★ 운영자가 여기만 고치면 돼요 ★★★
+   mode: 'test' = 연습용(톱니바퀴로 설정 바꾸기 가능)
+         'live' = 실제 운영(아래 값으로 고정, 손님에게 톱니바퀴 안 보임) */
+const OWNER_CONFIG = {
+  mode: 'test',
+  aiProv: 'server',   // 'server' = Netlify 금고에 넣은 AI 키 사용
+  payMode: 'toss',    // 'toss' = 토스페이먼츠 결제
+  price: 2900,        // Netlify의 PRICE 값과 똑같이!
+  tossKey: ''         // 토스 클라이언트 키 (test_ck_... 또는 live_ck_...)
+};
+const LIVE = OWNER_CONFIG.mode === 'live';
+let cfg = LIVE ? Object.assign({}, DEFAULTS, OWNER_CONFIG) : Object.assign({}, DEFAULTS, store.get('cfg', {}));
+if (LIVE) document.getElementById('gearBtn').hidden = true;
+
+/* ============ 1. 화면 바꾸기 ============ */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === 's-' + id));
+  window.scrollTo(0, 0);
+}
+$('#homeBtn').onclick = () => { history.replaceState(null, '', location.pathname + location.search); show('landing'); };
+$('#startBtn').onclick = () => show('form');
+
+/* ============ 2. 입력 화면 만들기 ============ */
+const thisYear = new Date().getFullYear();
+const opt = (v, t, sel) => `<option value="${v}"${sel ? ' selected' : ''}>${t}</option>`;
+$('#y').innerHTML = Array.from({ length: thisYear - 1929 }, (_, i) => thisYear - i).map(y => opt(y, y + '년', y === 1995)).join('');
+$('#m').innerHTML = Array.from({ length: 12 }, (_, i) => opt(i + 1, (i + 1) + '월')).join('');
+$('#hh').innerHTML = Array.from({ length: 24 }, (_, h) => opt(h, (h < 12 ? '오전 ' : '오후 ') + ((h % 12) || 12) + '시', h === 9)).join('');
+$('#mm').innerHTML = Array.from({ length: 60 }, (_, m) => opt(m, String(m).padStart(2, '0') + '분')).join('');
+function fillDays() {
+  const y = +$('#y').value, m = +$('#m').value, lunar = state.cal === 'lunar';
+  const max = lunar ? 30 : new Date(y, m, 0).getDate();
+  const cur = +$('#d').value || 1;
+  $('#d').innerHTML = Array.from({ length: max }, (_, i) => opt(i + 1, (i + 1) + '일', i + 1 === Math.min(cur, max))).join('');
+}
+const state = { gender: 'F', cal: 'solar' };
+function seg(id, key, after) {
+  $(id).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    $(id).querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    state[key] = b.dataset.v; after && after();
+  });
+}
+seg('#gender', 'gender');
+seg('#cal', 'cal', () => { $('#leapWrap').hidden = state.cal !== 'lunar'; fillDays(); });
+$('#y').onchange = fillDays; $('#m').onchange = fillDays;
+$('#unknown').onchange = e => { $('#hh').disabled = $('#mm').disabled = e.target.checked; };
+fillDays();
+
+$('#form').addEventListener('submit', e => {
+  e.preventDefault();
+  const input = {
+    n: $('#name').value.trim(), g: state.gender, c: state.cal, l: $('#leap').checked && state.cal === 'lunar',
+    y: +$('#y').value, m: +$('#m').value, d: +$('#d').value,
+    h: $('#unknown').checked ? null : +$('#hh').value, mi: $('#unknown').checked ? null : +$('#mm').value
+  };
+  if (!input.n) { $('#err').textContent = '이름(또는 닉네임)을 적어주세요.'; $('#name').focus(); return; }
+  const solar = toSolar(input);
+  if (!solar) { $('#err').textContent = input.l ? '그 해에는 해당 윤달이 없어요. 날짜를 다시 확인해 주세요.' : '날짜를 다시 확인해 주세요. (음력은 1930~2050년까지 돼요)'; return; }
+  $('#err').textContent = '';
+  run(input);
+});
+
+/* 음력 → 양력 바꾸기 */
+function toSolar(i) {
+  if (i.c === 'solar') return { y: i.y, m: i.m, d: i.d };
+  try {
+    const k = new KoreanLunarCalendar();
+    if (!k.setLunarDate(i.y, i.m, i.d, !!i.l)) return null;
+    const s = k.getSolarCalendar();
+    const back = k.getLunarCalendar();
+    if (back.month !== i.m || back.day !== i.d || !!back.intercalation !== !!i.l) return null;
+    return { y: s.year, m: s.month, d: s.day };
+  } catch (e) { return null; }
+}
+
+/* ============ 3. 로딩 + 계산 ============ */
+const MSGS = ['사주팔자 8글자를 세우고 있어요...', '오행의 균형을 살펴보는 중이에요...', '타고난 기질을 읽고 있어요...', '나만의 인생 지도를 그리는 중이에요...'];
+let current = null;
+async function run(input, fromLink) {
+  show('loading');
+  let i = 0; const msgEl = $('#loadMsg'), bar = $('#loadBar');
+  msgEl.textContent = MSGS[0]; bar.style.width = '8%';
+  const timer = setInterval(() => {
+    i++; msgEl.style.opacity = 0;
+    setTimeout(() => { msgEl.textContent = MSGS[i % MSGS.length]; msgEl.style.opacity = 1; }, 300);
+    bar.style.width = Math.min(92, 8 + i * 28) + '%';
+  }, 900);
+  const solar = toSolar(input);
+  const saju = SAJU.calc(solar.y, solar.m, solar.d, input.h, input.mi);
+  const [reading] = await Promise.all([getReading(input, saju), sleep(2700)]);
+  clearInterval(timer); bar.style.width = '100%';
+  await sleep(250);
+  current = { input, solar, saju, reading, id: makeId(input), fromLink: !!fromLink };
+  render();
+  show('result');
+}
+const makeId = i => [i.n, i.g, i.c, i.l ? 1 : 0, i.y, i.m, i.d, i.h ?? 'x', i.mi ?? 'x'].join('|');
+
+/* ============ 4. 풀이 만들기 (AI 또는 예시) ============ */
+const EL = ['목', '화', '토', '금', '수'];
+const EL_HANJA = { 목: '木', 화: '火', 토: '土', 금: '金', 수: '水' };
+const EL_NAME = { 목: '나무', 화: '불', 토: '흙', 금: '쇠', 수: '물' };
+const EL_COLOR = { 목: '#7BB88A', 화: '#E58C80', 토: '#E3C462', 금: '#B9BEC8', 수: '#7FA8D6' };
+const iyeyo = e => ['목', '금'].includes(e) ? '이에요' : '예요';
+const mother = e => EL[(EL.indexOf(e) + 4) % 5];    // 나를 도와주는 오행
+const child = e => EL[(EL.indexOf(e) + 1) % 5];     // 내가 키우는 오행
+const controls = e => EL[(EL.indexOf(e) + 2) % 5];  // 내가 다스리는 오행 = 재물
+const controller = e => EL[(EL.indexOf(e) + 3) % 5];// 나를 다스리는 오행 = 명예·관계
+
+const DM = [ // 일간(나를 뜻하는 글자) 10가지
+  { nick: '곧게 뻗은 큰 소나무', one: '한번 정한 길은 끝까지 걸어가고, 주변에 시원한 그늘을 내어주는 사람', key: ['리더십', '정직함', '추진력'],
+    p: '큰 나무처럼 위로 곧게 자라려는 마음이 강해요. 옳다고 믿는 일에는 망설임 없이 앞장서고, 누가 시키지 않아도 책임을 떠안는 편이에요. 겉으로는 단단해 보여도 속정이 깊어서, 내 사람이라고 생각하면 끝까지 챙깁니다.',
+    work: '기획·교육·창업·관리직처럼 방향을 정하고 사람을 이끄는 일', love: '든든한 버팀목 같은 연애를 해요. 다만 "내가 맞다"는 고집이 나올 때 한 템포 쉬어 가면 관계가 훨씬 부드러워져요.' },
+  { nick: '바람에도 꺾이지 않는 들꽃', one: '어떤 환경에서도 뿌리를 내리고, 결국 예쁘게 꽃을 피워내는 사람', key: ['유연함', '친화력', '생활력'],
+    p: '부드럽고 다정해 보이지만 생명력이 아주 강한 타입이에요. 상황에 맞춰 몸을 굽힐 줄 알아서 어디서든 잘 어울리고, 사람과 사람을 잇는 재주가 있어요. 작은 것도 놓치지 않는 섬세함이 큰 무기예요.',
+    work: '상담·서비스·디자인·마케팅처럼 사람의 마음을 읽고 연결하는 일', love: '상대에게 맞춰주는 배려가 커요. 너무 맞추다 지치지 않도록, 내가 원하는 것도 솔직하게 말해 보세요.' },
+  { nick: '온 세상을 비추는 한낮의 태양', one: '있는 그대로 밝게 빛나며 주변까지 환하게 만드는 사람', key: ['열정', '표현력', '솔직함'],
+    p: '숨김없이 밝고 시원시원한 기운을 타고났어요. 감정 표현이 솔직하고, 사람들 앞에 서면 오히려 힘이 나는 타입이에요. 뒤끝이 없어 주변에 사람이 모이지만, 가끔은 너무 뜨거워 쉽게 지칠 수 있어요.',
+    work: '방송·강의·영업·브랜딩처럼 나를 드러내고 에너지를 나누는 일', love: '좋아하면 숨기지 못하는 직진형이에요. 상대의 속도를 한 번씩 확인해 주면 오래 따뜻한 사랑을 이어가요.' },
+  { nick: '어둠을 밝히는 따뜻한 촛불', one: '조용하지만 꼭 필요한 곳을 비추며 사람의 마음을 녹이는 사람', key: ['섬세함', '집중력', '따뜻함'],
+    p: '촛불처럼 은은하지만 꺼지지 않는 열정을 품고 있어요. 한 가지에 깊이 몰입하는 힘이 있고, 다른 사람의 아픔을 잘 알아채는 따뜻한 눈을 가졌어요. 생각이 많은 밤이 있더라도 그 생각이 결국 좋은 아이디어가 됩니다.',
+    work: '연구·글쓰기·의료·교육처럼 깊이 있게 파고들어 누군가를 돕는 일', love: '작은 것까지 기억해 주는 다정한 연인이에요. 서운함을 혼자 오래 품지 말고 그때그때 꺼내 놓는 게 좋아요.' },
+  { nick: '모두를 품어주는 너른 산', one: '흔들리지 않는 믿음으로 사람들이 기대어 쉴 수 있게 해주는 사람', key: ['신뢰', '포용력', '꾸준함'],
+    p: '큰 산처럼 묵직하고 믿음직한 기운이에요. 쉽게 흔들리지 않아 위기일수록 빛나고, 사람들이 자연스럽게 고민을 털어놓아요. 변화에 천천히 반응하는 편이라, 시작은 느려도 한번 쌓은 것은 오래 갑니다.',
+    work: '부동산·금융·공공기관·중재 역할처럼 신뢰가 핵심인 일', love: '말보다 행동으로 사랑을 보여줘요. 가끔은 마음을 말로도 표현해 주면 상대가 훨씬 안심해요.' },
+  { nick: '씨앗을 키워내는 기름진 밭', one: '무엇이든 정성껏 길러내서 결국 열매를 맺게 하는 사람', key: ['실속', '꼼꼼함', '돌봄'],
+    p: '밭이 씨앗을 품어 키우듯, 사람과 일을 차근차근 키워내는 재주가 있어요. 현실 감각이 좋아 허황된 꿈보다 손에 잡히는 결과를 좋아하고, 맡은 일은 빈틈없이 챙겨요. 남을 돌보느라 나를 놓치지 않는 것이 숙제예요.',
+    work: '회계·운영·교육·식품·복지처럼 차곡차곡 쌓아 결과를 내는 일', love: '상대를 세심하게 챙기는 살림꾼 스타일이에요. 받는 사랑에도 익숙해지면 관계가 더 단단해져요.' },
+  { nick: '단단하게 빛나는 큰 바위', one: '결단이 필요할 때 망설이지 않고, 한번 맺은 의리는 끝까지 지키는 사람', key: ['결단력', '의리', '강인함'],
+    p: '원석처럼 단단하고 강한 기운을 타고났어요. 옳고 그름이 분명하고 결정이 빨라서 어려운 상황을 정리하는 데 강해요. 처음엔 차가워 보일 수 있지만 알면 알수록 의리 있고 뜨거운 사람이에요.',
+    work: '기술·엔지니어링·법·운동·군경처럼 원칙과 실행력이 중요한 일', love: '한번 마음을 주면 변치 않는 순정파예요. 말투가 단호하게 들릴 수 있으니 부드러운 한마디를 곁들여 보세요.' },
+  { nick: '빛을 머금은 보석', one: '자기만의 결로 반짝이며, 아름다움과 완성도를 아는 사람', key: ['미적 감각', '섬세함', '자존감'],
+    p: '잘 다듬어진 보석처럼 세련되고 예민한 감각을 가졌어요. 디테일을 보는 눈이 뛰어나 완성도를 높이는 일에 강하고, 나만의 기준이 뚜렷해요. 상처를 잘 받는 만큼 회복도 빠르니 스스로를 믿어 주세요.',
+    work: '디자인·뷰티·패션·IT·전문 기술처럼 정교함이 빛나는 일', love: '취향과 분위기를 중요하게 여기는 로맨티스트예요. 완벽한 상대보다 편안한 상대가 나를 더 빛나게 해요.' },
+  { nick: '끝없이 흐르는 큰 바다', one: '넓은 시야와 지혜로 막힌 곳을 돌아 결국 더 큰 곳에 닿는 사람', key: ['지혜', '포부', '자유로움'],
+    p: '큰 바다처럼 품이 넓고 생각의 스케일이 커요. 새로운 것을 빨리 배우고, 여러 사람·정보를 연결해 큰 그림을 그리는 데 능해요. 한곳에 오래 묶여 있으면 답답해하니, 나만의 자유 시간이 꼭 필요해요.',
+    work: '무역·여행·유통·기획·데이터처럼 넓게 흐르며 연결하는 일', love: '대화가 잘 통하는 사람에게 끌려요. 서로의 자유를 존중해 주는 관계에서 가장 편안해져요.' },
+  { nick: '만물을 적시는 봄비', one: '조용히 스며들어 주변을 자라게 하는, 직관이 맑은 사람', key: ['감수성', '직관력', '조용한 지혜'],
+    p: '봄비처럼 부드럽고 촉촉한 감성을 타고났어요. 말하지 않아도 분위기와 사람의 마음을 먼저 알아채는 직관이 뛰어나요. 겉으로 드러내기보다 뒤에서 조용히 큰 역할을 해내는 타입이에요.',
+    work: '심리·예술·기획·연구·콘텐츠처럼 감성과 통찰이 필요한 일', love: '깊고 진한 교감을 원해요. 혼자 상상으로 결론 내리기보다 직접 물어보는 습관이 사랑을 지켜줘요.' }
+];
+const LUCK = {
+  목: { color: '초록색 · 연두색', hex: '#7BB88A', habits: ['아침에 10분 걷기 — 나무처럼 몸을 쭉 펴 주세요', '작은 화분 하나 키우거나 식물에 물 주기'], num: '3, 8', dir: '동쪽' },
+  화: { color: '코랄 · 빨간색', hex: '#E58C80', habits: ['낮에 15분 햇볕 쬐기', '자기 전 "오늘 고마웠던 일" 한 줄 쓰기'], num: '2, 7', dir: '남쪽' },
+  토: { color: '베이지 · 노란색', hex: '#E3C462', habits: ['책상 위 한 칸만 정리하기', '세 끼를 비슷한 시간에 챙겨 먹기'], num: '5, 10', dir: '가운데(집 안 정돈)' },
+  금: { color: '흰색 · 실버', hex: '#C9CDD5', habits: ['안 쓰는 물건 하나 비우기', '내일 할 일 3가지만 적어 두기'], num: '4, 9', dir: '서쪽' },
+  수: { color: '남색 · 하늘색', hex: '#7FA8D6', habits: ['물 6~8잔 나눠 마시기', '잠들기 전 5분 휴대폰 내려놓고 숨 고르기'], num: '1, 6', dir: '북쪽' }
+};
+
+function analyze(saju) {
+  const c = saju.count, total = Object.values(c).reduce((a, b) => a + b, 0);
+  const me = SAJU.STEM_EL[saju.dayMaster];
+  const sorted = EL.slice().sort((a, b) => c[b] - c[a]);
+  const strong = sorted[0], weak = sorted[4];
+  const missing = EL.filter(e => c[e] === 0);
+  const support = c[me] + c[mother(me)];
+  return { c, total, me, strong, weak, missing, isStrong: support >= total / 2, wealth: controls(me), rel: controller(me), out: child(me) };
+}
+
+function mockReading(input, saju) {
+  const a = analyze(saju), dm = DM[saju.dayMaster], name = input.n;
+  const L = LUCK[a.weak];
+  const strengthTxt = a.isStrong
+    ? `${name}님의 사주는 나를 뜻하는 ${EL_NAME[a.me]}(${a.me})의 기운이 든든한 편이에요. 내 생각이 분명하고 스스로 길을 만드는 힘이 있으니, 혼자 다 하려 하기보다 함께하는 사람에게 역할을 나눠 주면 더 크게 성장해요.`
+    : `${name}님의 사주는 나를 뜻하는 ${EL_NAME[a.me]}(${a.me})의 기운이 은은한 편이에요. 그래서 주변의 흐름을 잘 읽고 사람들과 조화를 이루는 데 강해요. 나를 응원해 주는 사람과 환경을 곁에 두면 가진 재능이 훨씬 크게 피어나요.`;
+  const wc = a.c[a.wealth];
+  const wealthTxt = wc === 0
+    ? `재물을 뜻하는 ${EL_NAME[a.wealth]}(${a.wealth}) 기운이 겉으로 드러나 있지 않아요. 이런 분은 돈을 쫓기보다 실력과 전문성을 먼저 쌓을 때 돈이 따라오는 '늦게 피는 부자'형이에요. 한 우물을 깊게 파는 것이 가장 좋은 재테크예요.`
+    : wc <= 2
+    ? `재물을 뜻하는 ${EL_NAME[a.wealth]}(${a.wealth}) 기운이 알맞게 자리 잡고 있어요. 버는 힘과 지키는 힘이 균형을 이루는 편이라, 꾸준히 모으는 습관만 들이면 착실하게 불어나요. 자동이체 저축처럼 '저절로 모이는 장치'가 잘 맞아요.`
+    : `재물을 뜻하는 ${EL_NAME[a.wealth]}(${a.wealth}) 기운이 넉넉해요. 돈이 들어올 길은 많지만 나가는 길도 많은 구조라, 관리가 곧 실력이에요. 수입이 생기면 바로 일정 비율을 떼어 두는 규칙을 꼭 만들어 두세요.`;
+  const rc = input.g === 'M' ? a.c[a.wealth] : a.c[a.rel];
+  const loveBase = rc === 0
+    ? '인연을 뜻하는 기운이 조용한 편이라, 억지로 찾기보다 취미·공부·일 속에서 자연스럽게 만나는 인연이 오래가요.'
+    : rc <= 2
+    ? '인연을 뜻하는 기운이 적당히 들어 있어서, 서두르지 않아도 때가 되면 좋은 사람이 곁에 와요.'
+    : '인연의 기운이 많아 사람을 끄는 매력이 있어요. 그만큼 사람 사이의 경계를 분명히 하면 진짜 좋은 인연을 알아볼 수 있어요.';
+  return {
+    nickname: dm.nick,
+    summary: dm.one,
+    keywords: dm.key,
+    personality: `${dm.p}\n${strengthTxt}`,
+    wealth: `${wealthTxt}\n잘 맞는 일: ${dm.work}. 특히 ${EL_NAME[a.out]}(${a.out})의 기운, 즉 내 재능을 밖으로 표현하는 활동을 할 때 돈의 흐름이 열려요.`,
+    love: `${dm.love}\n${loveBase} 대인관계에서는 ${a.strong} 기운이 강한 만큼 ${{ 목: '추진력이', 화: '밝은 에너지가', 토: '믿음직함이', 금: '분명함이', 수: '센스와 지혜가' }[a.strong]} 첫인상의 매력이 돼요.`,
+    luck: {
+      color: L.color, hex: L.hex, number: L.num, direction: L.dir,
+      text: `${name}님 사주에서 가장 약한 기운은 ${EL_NAME[a.weak]}(${a.weak})${iyeyo(a.weak)}${a.missing.length ? ` (없는 기운: ${a.missing.join('·')})` : ''}. 부족한 기운은 생활 속 작은 습관으로 채울 수 있어요.`,
+      habits: L.habits
+    },
+    source: '예시 풀이'
+  };
+}
+
+function buildPrompt(input, saju) {
+  const p = saju.pillars, f = x => x ? `${SAJU.STEMS[x.s]}${SAJU.BRANCHES[x.b]}(${SAJU.STEMS_KO[x.s]}${SAJU.BRANCHES_KO[x.b]})` : '모름';
+  const a = analyze(saju);
+  return `당신은 따뜻하고 현대적인 한국어 사주 상담가입니다. 아래 사주를 보고 JSON으로만 답하세요.
+이름: ${input.n} / 성별: ${input.g === 'M' ? '남성' : '여성'}
+년주 ${f(p.year)}, 월주 ${f(p.month)}, 일주 ${f(p.day)}, 시주 ${f(p.hour)}
+일간(나): ${SAJU.STEMS[saju.dayMaster]} (${a.me}) / 오행 개수: ${EL.map(e => e + a.c[e]).join(', ')}
+규칙: 겁주는 표현 금지, 구체적이고 다정하게, 각 항목 3~5문장.
+형식: {"nickname":"자연물 비유 별명(15자 이내)","summary":"한 줄 요약","keywords":["키워드3개"],"personality":"","wealth":"","love":"","luck":{"color":"행운의 색","hex":"#RRGGBB","number":"행운의 숫자","direction":"방향","text":"","habits":["오늘 해볼 작은 습관 2개"]}}`;
+}
+
+async function getReading(input, saju) {
+  const mock = mockReading(input, saju);
+  if (cfg.aiProv === 'mock') return mock;
+  try {
+    const ai = await callAI(buildPrompt(input, saju));
+    const merged = Object.assign({}, mock, ai, { luck: Object.assign({}, mock.luck, ai.luck || {}) });
+    merged.source = { openai: 'OpenAI', gemini: 'Gemini', server: 'AI 서버' }[cfg.aiProv] + ' 풀이';
+    return merged;
+  } catch (e) {
+    console.warn(e);
+    setTimeout(() => toast('AI 연결이 안 돼서 예시 풀이로 보여드려요'), 3200);
+    return mock;
+  }
+}
+
+async function callAI(prompt) {
+  const ctrl = new AbortController(); setTimeout(() => ctrl.abort(), 25000);
+  let text;
+  if (cfg.aiProv === 'openai') {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST', signal: ctrl.signal,
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + cfg.aiKey },
+      body: JSON.stringify({ model: cfg.aiModel || 'gpt-4o-mini', response_format: { type: 'json_object' }, messages: [{ role: 'user', content: prompt }] })
+    });
+    if (!r.ok) throw new Error('OpenAI ' + r.status);
+    text = (await r.json()).choices[0].message.content;
+  } else if (cfg.aiProv === 'gemini') {
+    const model = cfg.aiModel || 'gemini-2.5-flash';
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: 'POST', signal: ctrl.signal,
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cfg.aiKey },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json' } })
+    });
+    if (!r.ok) throw new Error('Gemini ' + r.status);
+    text = (await r.json()).candidates[0].content.parts[0].text;
+  } else if (cfg.aiProv === 'server') {
+    const r = await fetch('/api/reading', { method: 'POST', signal: ctrl.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt }) });
+    if (!r.ok) throw new Error('server ' + r.status);
+    text = (await r.json()).text;
+  }
+  return JSON.parse(text);
+}
+
+/* ============ 5. 결과 화면 그리기 ============ */
+const isUnlocked = () => cfg.payMode === 'free' || (store.get('unlocked', []).includes(current.id) && !current.fromLink);
+const para = t => String(t || '').split('\n').filter(Boolean).map(x => `<p>${esc(x)}</p>`).join('');
+
+function render() {
+  const { input, solar, saju, reading: r } = current;
+  const p = saju.pillars, a = analyze(saju), open = isUnlocked();
+  const cell = (x, kind, me) => {
+    if (!x) return `<div class="cell none"><b>?</b><span>모름</span></div>`;
+    const idx = kind === 's' ? x.s : x.b;
+    const el = kind === 's' ? SAJU.STEM_EL[idx] : SAJU.BRANCH_EL[idx];
+    const hz = kind === 's' ? SAJU.STEMS[idx] : SAJU.BRANCHES[idx];
+    const ko = kind === 's' ? SAJU.STEMS_KO[idx] : SAJU.BRANCHES_KO[idx];
+    return `<div class="cell e-${el}${me ? ' me' : ''}"><b>${hz}</b><span>${ko} · ${el}</span></div>`;
+  };
+  const cols = [['시주', p.hour], ['일주', p.day], ['월주', p.month], ['년주', p.year]];
+  const max = Math.max(...EL.map(e => a.c[e]), 1);
+  const dateTxt = `${input.c === 'lunar' ? '음력' + (input.l ? '(윤)' : '') : '양력'} ${input.y}.${input.m}.${input.d}` +
+    (input.c === 'lunar' ? ` (양력 ${solar.y}.${solar.m}.${solar.d})` : '') +
+    (input.h === null ? ' · 시간 모름' : ` · ${String(input.h).padStart(2, '0')}:${String(input.mi).padStart(2, '0')}`);
+  const lock = (key, emoji, title, body) => `
+    <article class="card sec ${open ? '' : 'locked'}">
+      <h3>${emoji} ${title}</h3>
+      <div class="body">${body}</div>
+      <div class="lockbox"><strong>프리미엄 풀이에서 열려요</strong><button data-pay>${won(cfg.price)}에 전체 풀이 보기</button></div>
+    </article>`;
+  const luck = r.luck || {};
+  $('#result').innerHTML = `
+    <article class="card sum">
+      <svg viewBox="0 0 120 120" aria-hidden="true"><path d="M74 18a44 44 0 1 0 26 72A37 37 0 0 1 74 18Z" fill="#C8A96A" opacity=".85"/><circle cx="30" cy="34" r="2" fill="#fff"/><circle cx="96" cy="104" r="1.6" fill="#fff"/></svg>
+      <p class="k">${esc(input.n)}님의 사주 한 줄 요약</p>
+      <p class="nick">${esc(r.nickname)}</p>
+      <p class="one">${esc(r.summary)}</p>
+      <div class="chips">${(r.keywords || []).map(k => `<span class="chip"># ${esc(k)}</span>`).join('')}</div>
+    </article>
+
+    <article class="card">
+      <h3>사주팔자 8글자 (만세력)</h3>
+      <p class="small muted">${esc(dateTxt)}</p>
+      <div class="pillars" style="margin-top:12px">
+        ${cols.map(([h, x]) => `<div class="pcol"><div class="h">${h}</div>${cell(x, 's', h === '일주')}${cell(x, 'b')}</div>`).join('')}
+      </div>
+      <p class="note">금색 테두리 글자(<b>${SAJU.STEMS[saju.dayMaster]} ${SAJU.STEMS_KO[saju.dayMaster]}</b>)가 바로 <b>'나 자신'</b>을 뜻하는 일간이에요. 위 줄은 하늘의 기운(천간), 아래 줄은 땅의 기운(지지)이에요.</p>
+    </article>
+
+    <article class="card">
+      <h3>오행 균형</h3>
+      <p class="small muted">총 ${a.total}글자 중 각 기운이 몇 개인지 보여줘요</p>
+      <div class="bars">
+        ${EL.map(e => `<div class="brow"><span class="badge e-${e}">${e} ${EL_HANJA[e]}</span><div class="track"><i data-w="${a.c[e] / max * 100}" style="background:${EL_COLOR[e]}"></i></div><span class="v">${a.c[e]}개 · ${Math.round(a.c[e] / a.total * 100)}%</span></div>`).join('')}
+      </div>
+      <p class="note">가장 강한 기운은 <b>${EL_NAME[a.strong]}(${a.strong})</b>, 가장 약한 기운은 <b>${EL_NAME[a.weak]}(${a.weak})</b>${iyeyo(a.weak)}.${a.missing.length ? ` 사주에 없는 기운: <b>${a.missing.join('·')}</b>` : ' 다섯 기운이 모두 들어 있어요.'}</p>
+    </article>
+
+    <article class="card sec">
+      <h3>🌿 타고난 성격과 기질</h3>
+      <div class="body">${para(r.personality)}</div>
+    </article>
+
+    ${open ? '' : `<article class="card premium" id="premiumCard">
+      <h3>나머지 풀이도 열어볼까요?</h3>
+      <p class="price">${won(cfg.price)}</p>
+      <ul><li>💰 재물운과 나에게 잘 맞는 일</li><li>❤️ 연애운과 대인관계</li><li>🍀 행운의 컬러 · 숫자 · 오늘의 개운 습관</li></ul>
+      <button class="cta gold" data-pay>프리미엄 풀이 열기</button>
+      ${cfg.payMode === 'test' ? '<p class="fine"><span class="testflag">테스트 모드</span> 진짜 돈은 나가지 않아요</p>' : ''}
+    </article>`}
+
+    ${lock('wealth', '💰', '재물운과 잘 맞는 일', para(r.wealth))}
+    ${lock('love', '❤️', '연애운과 대인관계', para(r.love))}
+    ${lock('luck', '🍀', '지금 필요한 현실 개운법', `${para(luck.text)}
+      <div class="lucky"><span class="sw" style="background:${/^#[0-9a-f]{6}$/i.test(luck.hex || '') ? luck.hex : '#C8A96A'}"></span><div><b>행운의 컬러: ${esc(luck.color)}</b><br><span class="small muted">행운의 숫자 ${esc(luck.number)} · 좋은 방향 ${esc(luck.direction)}</span></div></div>
+      <p style="margin-top:12px"><b>오늘 해볼 작은 습관</b></p>
+      <ul class="habit">${(luck.habits || []).map(h => `<li>${esc(h)}</li>`).join('')}</ul>`)}
+    <p class="src">${esc(r.source || '')}</p>
+
+    <div class="actions">
+      <button class="cta" id="shareBtn">결과 링크 복사하기</button>
+      <div class="linkbox" id="linkBox"><input class="input" id="linkInput" readonly aria-label="결과 링크"><p class="help">위 링크를 길게 눌러 복사해 주세요.</p></div>
+      <button class="cta ghost" id="againBtn">다른 사람 사주 보기</button>
+    </div>
+    <p class="disc">사주 풀이는 나를 돌아보는 재미있는 참고 자료예요.<br>중요한 결정은 스스로의 판단을 가장 믿어 주세요.<br>절기는 천문 계산으로 구해 경계 시각에 몇 분 차이가 날 수 있어요.</p>`;
+  requestAnimationFrame(() => setTimeout(() => document.querySelectorAll('.track i').forEach(i => i.style.width = i.dataset.w + '%'), 60));
+  document.querySelectorAll('[data-pay]').forEach(b => b.onclick = openPay);
+  $('#shareBtn').onclick = share;
+  $('#againBtn').onclick = () => { history.replaceState(null, '', location.pathname + location.search); show('form'); };
+}
+
+/* ============ 6. 공유 링크 ============ */
+const toHex = s => Array.from(new TextEncoder().encode(s), b => b.toString(16).padStart(2, '0')).join('');
+const fromHex = h => new TextDecoder().decode(new Uint8Array(h.match(/../g).map(x => parseInt(x, 16))));
+async function share() {
+  const url = location.href.split('#')[0] + '#r-' + toHex(current.id);
+  try { await navigator.clipboard.writeText(url); toast('링크를 복사했어요! 친구에게 붙여넣기 해 보세요'); }
+  catch (e) { $('#linkBox').classList.add('on'); $('#linkInput').value = url; $('#linkInput').select(); }
+}
+function fromLink() {
+  const m = location.hash.match(/^#r-([0-9a-f]+)$/i); if (!m) return false;
+  try {
+    const [n, g, c, l, y, mo, d, h, mi] = fromHex(m[1]).split('|');
+    const input = { n: n.slice(0, 12), g, c, l: l === '1', y: +y, m: +mo, d: +d, h: h === 'x' ? null : +h, mi: mi === 'x' ? null : +mi };
+    if (!toSolar(input)) return false;
+    run(input, true); return true;
+  } catch (e) { return false; }
+}
+
+/* ============ 7. 결제(과금) ============ */
+let payMethod = 'CARD';
+function openPay() {
+  $('#payPrice').textContent = won(cfg.price);
+  $('#payGo').innerHTML = `${won(cfg.price)} 결제하기`;
+  $('#payModeText').innerHTML = cfg.payMode === 'toss' ? '토스페이먼츠 결제창으로 이동해요.' : '<span class="testflag">테스트 모드</span> 실제 결제 없이 결제 과정을 체험해요.';
+  $('#payFine').textContent = cfg.payMode === 'toss' ? '결제 후 이 화면으로 돌아와요.' : '운영할 때는 설정에서 토스페이먼츠로 바꿔 주세요.';
+  $('#payDim').classList.add('on');
+}
+$('#payMethods').onclick = e => {
+  const b = e.target.closest('.pm'); if (!b) return;
+  payMethod = b.dataset.v; $('#payMethods').querySelectorAll('.pm').forEach(x => x.setAttribute('aria-pressed', x === b));
+};
+$('#payGo').onclick = async () => {
+  const btn = $('#payGo'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 결제 중...';
+  try {
+    if (cfg.payMode === 'toss') await payWithToss();
+    else { await sleep(1500); unlock(cfg.price, '테스트'); }
+  } catch (e) { toast(e.message || '결제가 취소되었어요'); }
+  btn.disabled = false; btn.innerHTML = `${won(cfg.price)} 결제하기`;
+};
+function unlock(amount, kind) {
+  const u = store.get('unlocked', []); if (!u.includes(current.id)) u.push(current.id); store.set('unlocked', u);
+  const sales = store.get('sales', []); sales.push({ t: Date.now(), amount, kind }); store.set('sales', sales);
+  current.fromLink = false;
+  $('#payDim').classList.remove('on');
+  render(); toast(kind === '테스트' ? '결제 완료! (테스트) 전체 풀이가 열렸어요 🎉' : '결제 완료! 전체 풀이가 열렸어요 🎉');
+  setTimeout(() => { const s = document.querySelectorAll('.sec')[1]; s && s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
+}
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('결제 모듈을 불러오지 못했어요. (미리보기 링크에서는 막혀 있어요 — 직접 배포한 사이트에서 사용하세요)')); document.head.appendChild(s); });
+}
+async function payWithToss() {
+  if (!cfg.tossKey) throw new Error('설정에서 토스페이먼츠 클라이언트 키를 먼저 넣어 주세요');
+  if (!window.TossPayments) await loadScript('https://js.tosspayments.com/v2/standard');
+  const orderId = 'dalbit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  store.set('pending', { id: current.id, input: current.input, orderId, amount: cfg.price });
+  const base = location.href.split('#')[0].split('?')[0];
+  const payment = TossPayments(cfg.tossKey).payment({ customerKey: TossPayments.ANONYMOUS });
+  // 토스페이·카카오페이는 '카드 결제창'에서 간편결제로 바로 열어요
+  const easy = { TOSSPAY: '토스페이', KAKAOPAY: '카카오페이' }[payMethod];
+  await payment.requestPayment({
+    method: 'CARD', ...(easy ? { card: { flowMode: 'DIRECT', easyPay: easy } } : {}), amount: { currency: 'KRW', value: cfg.price }, orderId, orderName: '달빛사주 프리미엄 풀이',
+    successUrl: base + '?pay=success', failUrl: base + '?pay=fail'
+  });
+}
+/* 토스 결제창에서 돌아왔을 때: 서버(/api/confirm)에서 최종 승인해야 진짜 결제가 끝나요 */
+async function handleTossReturn() {
+  const q = new URLSearchParams(location.search); if (!q.get('pay')) return false;
+  const pending = store.get('pending', null);
+  history.replaceState(null, '', location.pathname);
+  if (q.get('pay') === 'fail' || !pending) { toast('결제가 완료되지 않았어요: ' + (q.get('message') || '취소')); return false; }
+  try {
+    const r = await fetch('/api/confirm', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentKey: q.get('paymentKey'), orderId: q.get('orderId'), amount: Number(q.get('amount')) }) });
+    if (!r.ok) throw new Error();
+    await run(pending.input); unlock(Number(q.get('amount')), '토스');
+  } catch (e) { toast('결제 승인 서버에 연결하지 못했어요. 운영 안내서의 서버 설정을 확인해 주세요.', 5000); await run(pending.input); }
+  store.set('pending', null); return true;
+}
+
+/* ============ 8. 설정 ============ */
+function fillSettings() {
+  for (const k of ['aiProv', 'aiKey', 'aiModel', 'payMode', 'price', 'tossKey']) $('#' + k).value = cfg[k];
+  const sales = store.get('sales', []);
+  $('#stCount').textContent = sales.length + '건';
+  $('#stSum').textContent = won(sales.reduce((s, x) => s + x.amount, 0));
+}
+$('#gearBtn').onclick = () => { fillSettings(); $('#setDim').classList.add('on'); };
+function readSettings() {
+  const next = {};
+  for (const k of ['aiProv', 'aiKey', 'aiModel', 'payMode', 'tossKey']) next[k] = $('#' + k).value.trim();
+  next.price = Math.max(100, Math.round((+$('#price').value || DEFAULTS.price) / 100) * 100);
+  return next;
+}
+$('#saveSet').onclick = () => {
+  const next = readSettings();
+  if (/_sk_/.test(next.tossKey)) { toast('시크릿 키는 넣으면 안 돼요! 클라이언트 키(…_ck_…)를 넣어 주세요', 4000); return; }
+  cfg = next; store.set('cfg', cfg);
+  $('#setDim').classList.remove('on'); toast('설정을 저장했어요');
+  if (current && $('#s-result').classList.contains('on')) render();
+};
+$('#aiTest').onclick = async () => {
+  const keep = cfg; cfg = Object.assign({}, cfg, readSettings());
+  if (cfg.aiProv === 'mock') { toast('예시 풀이 모드는 연결 없이 바로 작동해요'); cfg = keep; return; }
+  toast('연결 확인 중...');
+  try { await callAI('{"ok":true} 라는 JSON만 그대로 답하세요.'); toast('연결 성공! 저장하기를 눌러 주세요 ✅'); }
+  catch (e) { toast('연결 실패: 키·모델 이름을 확인하거나, 미리보기 링크에서는 외부 연결이 막혀 있을 수 있어요', 5000); }
+  cfg = keep;
+};
+$('#resetSales').onclick = () => { store.set('sales', []); fillSettings(); toast('판매 기록을 지웠어요'); };
+document.querySelectorAll('.dim').forEach(d => d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-close]')) d.classList.remove('on'); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.dim.on').forEach(d => d.classList.remove('on')); });
+
+/* ============ 9. 시작 ============ */
+handleTossReturn().then(done => { if (!done) fromLink(); });
+window.addEventListener('hashchange', () => { if (!fromLink() && !location.hash) show('landing'); });
+}
+</script>
+</body>
+</html>
